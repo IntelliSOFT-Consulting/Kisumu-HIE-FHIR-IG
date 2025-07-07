@@ -1,0 +1,45 @@
+name: Publish FHIR IG
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: hl7fhir/ig-publisher-base:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download latest IG Publisher
+        run: |
+          curl -L https://github.com/HL7/fhir-ig-publisher/releases/latest/download/publisher.jar \
+            -o ./input-cache/publisher.jar --create-dirs
+
+      - name: Install Sushi and build IG
+        run: |
+          npm install -g fsh-sushi@latest
+          mkdir -p build-output
+          ./_genonce.sh
+          cp -r output/* build-output/
+
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build-output
+
+      - name: Upload via FTP to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./build-output/
+          server-dir: /fhir.kisumuhealth.co.ke/
+          port: 21
+          protocol: ftps

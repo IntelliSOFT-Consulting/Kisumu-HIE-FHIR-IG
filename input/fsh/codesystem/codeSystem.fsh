@@ -17,9 +17,12 @@ Description: "Code System for service types for a given encounter"
 * ^experimental = false
 * ^caseSensitive = true
 
-* #1 "Registration Encounter" 
-* #2 "Maternal Encounter" 
-* #3 "ANC Encounter"
+* #1 "Patient Registration" 
+* #2 "ANC Profile"
+* #3 "Ultrasound Profile"
+* #4 "Delivery Encounter"
+* #5 "PNC Encounter"
+
 
 
 CodeSystem: ANCAmnioticFluidLevelCS
